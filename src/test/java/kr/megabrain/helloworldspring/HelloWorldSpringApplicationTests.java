@@ -3,66 +3,46 @@ package kr.megabrain.helloworldspring;
 import kr.megabrain.helloworldspring.domain.Member;
 import kr.megabrain.helloworldspring.repository.MemberRepository;
 import kr.megabrain.helloworldspring.repository.MemoryMemberRepository;
+import kr.megabrain.helloworldspring.service.MemberService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class HelloWorldSpringApplicationTests {
 
-	MemoryMemberRepository repository = new MemoryMemberRepository();
-
-	@AfterEach
-	public void afterEach() {
-		repository.clearStore();
-	}
-
+	@Autowired
+	MemberService memberService;
+	@Autowired
+	MemberRepository memberRepository;
 	@Test
-	public void save() {
+	public void 회원가입() throws Exception {
 		Member member = new Member();
-		member.setName("spring");
-
-		repository.save(member);
-
-		Member result = repository.findById(member.getId()).get();
-		assertEquals(member, result);
+		member.setName("hello");
+//When
+		Long saveId = memberService.join(member);
+//Then
+		Member findMember = memberRepository.findById(saveId).get();
+		assertEquals(member.getName(), findMember.getName());
 	}
-
 	@Test
-	public void findByName() {
-		//given
+	public void 중복_회원_예외() throws Exception {
+//Given
 		Member member1 = new Member();
-		member1.setName("spring1");
-		repository.save(member1);
-
+		member1.setName("spring");
 		Member member2 = new Member();
-		member2.setName("spring2");
-		repository.save(member2);
-		//when
-		Member result = repository.findByName("spring1").get();
-
-		// then
-		assertEquals(member1, result);
+		member2.setName("spring");
+//When
+		memberService.join(member1);
+		IllegalStateException e = assertThrows(IllegalStateException.class,
+				() -> memberService.join(member2));//예외가 발생해야 한다. assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
 	}
-
-	@Test
-	public void findAll() {
-		//given
-		Member member1 = new Member();
-		member1.setName("spring1");
-		repository.save(member1);
-		Member member2 = new Member();
-		member2.setName("spring2");
-		repository.save(member2);
-		//when
-		List<Member> result = repository.findAll();
-		//then
-		assertEquals(2, result.size());
-	}
-
 }

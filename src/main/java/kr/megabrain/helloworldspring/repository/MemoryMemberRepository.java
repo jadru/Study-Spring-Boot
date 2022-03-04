@@ -1,6 +1,7 @@
 package kr.megabrain.helloworldspring.repository;
 
 import kr.megabrain.helloworldspring.domain.Member;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 

@@ -3,12 +3,15 @@ package kr.megabrain.helloworldspring.service;
 import kr.megabrain.helloworldspring.domain.Member;
 import kr.megabrain.helloworldspring.repository.MemberRepository;
 import kr.megabrain.helloworldspring.repository.MemoryMemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 public class MemberService {
-
 
     private final MemberRepository memberRepository;
 
